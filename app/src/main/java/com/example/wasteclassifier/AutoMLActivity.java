@@ -88,6 +88,7 @@ public class AutoMLActivity extends BaseActivity {
         // run the image labeler
         FirebaseVisionOnDeviceAutoMLImageLabelerOptions labelerOptions =
                 new FirebaseVisionOnDeviceAutoMLImageLabelerOptions.Builder()
+                    // TODO REGISTER LOCAL MODEL!!
 //                .setLocalModelName(LOCAL_MODEL_NAME)
                 .setRemoteModelName(REMOTE_MODEL_NAME)
                 .setConfidenceThreshold(0.65f)
