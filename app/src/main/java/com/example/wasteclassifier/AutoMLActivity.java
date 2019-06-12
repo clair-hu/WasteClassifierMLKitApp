@@ -77,19 +77,21 @@ public class AutoMLActivity extends BaseActivity {
         // register remote model to the manager
         modelManager.registerRemoteModel(remoteModel);
 
-//        // set local ml model
-//        FirebaseLocalModel localModel = new FirebaseLocalModel.Builder(LOCAL_MODEL_NAME)
-//                .setAssetFilePath("manifest.json")
-//                .build();
-//
-//        // register local model to the manager used by remote manager as well
-//        modelManager.registerLocalModel(localModel);
+
+
+        // set local ml model
+        FirebaseLocalModel localModel = new FirebaseLocalModel.Builder(LOCAL_MODEL_NAME)
+                .setAssetFilePath("manifest.json")
+                .build();
+
+        // register local model to the manager used by remote manager as well
+        modelManager.registerLocalModel(localModel);
 
         // run the image labeler
         FirebaseVisionOnDeviceAutoMLImageLabelerOptions labelerOptions =
                 new FirebaseVisionOnDeviceAutoMLImageLabelerOptions.Builder()
                     // TODO REGISTER LOCAL MODEL!!
-//                .setLocalModelName(LOCAL_MODEL_NAME)
+                .setLocalModelName(LOCAL_MODEL_NAME)
                 .setRemoteModelName(REMOTE_MODEL_NAME)
                 .setConfidenceThreshold(0.65f)
                 .build();
