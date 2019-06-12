@@ -202,7 +202,7 @@ public class AutoMLActivity extends BaseActivity {
      */
     private void extractLabel(List<FirebaseVisionImageLabel> labels) {
         for (FirebaseVisionImageLabel label : labels) {
-            mTextView.append("Object is " + label.getText() + "\n");
+            mTextView.setText("Object is " + label.getText() + "\n");
             mTextView.append("Confidence is " + label.getConfidence() + "\n");
         }
     }

@@ -20,7 +20,9 @@
             android:id="@+id/text_view"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:text="TextView"
+            android:textSize="24dp"
+            android:gravity="center"
+            android:textStyle="bold"
             tools:text="The result will be shown here" />
     </LinearLayout>
 </ScrollView>
