@@ -29,6 +29,8 @@ import com.google.firebase.ml.vision.label.FirebaseVisionOnDeviceAutoMLImageLabe
 
 import java.io.File;
 import java.io.FileNotFoundException;
+import java.io.FileOutputStream;
+import java.io.IOException;
 import java.util.List;
 
 import static android.graphics.BitmapFactory.decodeFile;
@@ -75,18 +77,18 @@ public class AutoMLActivity extends BaseActivity {
         // register remote model to the manager
         modelManager.registerRemoteModel(remoteModel);
 
-        // set local ml model
-        FirebaseLocalModel localModel = new FirebaseLocalModel.Builder(LOCAL_MODEL_NAME)
-                .setAssetFilePath("manifest.json")
-                .build();
-
-        // register local model to the manager used by remote manager as well
-        modelManager.registerLocalModel(localModel);
+//        // set local ml model
+//        FirebaseLocalModel localModel = new FirebaseLocalModel.Builder(LOCAL_MODEL_NAME)
+//                .setAssetFilePath("manifest.json")
+//                .build();
+//
+//        // register local model to the manager used by remote manager as well
+//        modelManager.registerLocalModel(localModel);
 
         // run the image labeler
         FirebaseVisionOnDeviceAutoMLImageLabelerOptions labelerOptions =
                 new FirebaseVisionOnDeviceAutoMLImageLabelerOptions.Builder()
-                .setLocalModelName(LOCAL_MODEL_NAME)
+//                .setLocalModelName(LOCAL_MODEL_NAME)
                 .setRemoteModelName(REMOTE_MODEL_NAME)
                 .setConfidenceThreshold(0.65f)
                 .build();
@@ -114,11 +116,9 @@ public class AutoMLActivity extends BaseActivity {
                     Uri dataUri = data.getData();
                     String path = getPath(this, dataUri);
                     if (null == path) {
-                        // TODO resizeiMAGE()
                         bitmap = resizeImage(this, imageFile, dataUri, mImageView);
                     }
                     else {
-                        // TODO SECOND RESIZEIMAGE()
                         bitmap = resizeImage(imageFile, path, mImageView);
                     }
                     if (null != bitmap) {
@@ -139,7 +139,21 @@ public class AutoMLActivity extends BaseActivity {
         }
     }
 
-    private
+    /*  write a compressed version of the bitmap to the specified outputstream
+        input: imageFile and bitmap to compress
+        output: compressed bitmap
+     */
+    private static Bitmap compressImage(File imageFile, Bitmap bitmap) {
+        try {
+            FileOutputStream fileOutputStream = new FileOutputStream(imageFile);
+            bitmap.compress(Bitmap.CompressFormat.JPEG, 80, fileOutputStream);
+            fileOutputStream.close();
+        }
+        catch (IOException e) {
+            e.printStackTrace();
+        }
+        return bitmap;
+    }
 
     private static Bitmap resizeImage(Context context, File imageFile, Uri uri, ImageView view) {
         BitmapFactory.Options options = new BitmapFactory.Options();
@@ -156,10 +170,18 @@ public class AutoMLActivity extends BaseActivity {
         }
     }
 
-    //TODO COMPRESSimAGE()
+    private static Bitmap resizeImage(File imageFile, String path, ImageView view) {
+        BitmapFactory.Options options = new BitmapFactory.Options();
+        options.inJustDecodeBounds = true;
+        decodeFile(path, options);
 
-    // TODO FINISHED RESIZE IMAGE
-//    private static Bitmap resizeImage(File imageFile, String path, ImageView )
+        int photoWidth = options.outWidth;
+        int photoHeight = options.outHeight;
+
+        options.inJustDecodeBounds = false;
+        options.inSampleSize = Math.min( photoHeight/view.getHeight(), photoWidth/view.getWidth());
+        return compressImage(imageFile, BitmapFactory.decodeFile(path, options));
+    }
 
     private static String getPath(Context context, Uri uri) {
         String path = "";
