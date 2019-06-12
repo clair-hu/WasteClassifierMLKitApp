@@ -106,7 +106,7 @@ public class AutoMLActivity extends BaseActivity {
     protected void onActivityResult(int requestCode, int resultCode, Intent data) {
         super.onActivityResult(requestCode, resultCode, data);
         Bitmap bitmap;
-        if (RESULT_OK == requestCode) {
+        if (RESULT_OK == resultCode) {
             switch (requestCode) {
                 case RC_STORAGE_PERMS1:
                 case RC_STORAGE_PERMS2:
@@ -122,7 +122,7 @@ public class AutoMLActivity extends BaseActivity {
                         bitmap = resizeImage(imageFile, path, mImageView);
                     }
                     if (null != bitmap) {
-                        mTextView.setText("Sucessfully get image from album.");
+                        mTextView.setText("Sucessfully get image from album.\n");
                         mImageView.setImageBitmap(bitmap);
                         executeMLModel(bitmap);
                     }
@@ -130,7 +130,7 @@ public class AutoMLActivity extends BaseActivity {
                 case RC_TAKE_PICTURE:
                     bitmap = resizeImage(imageFile, imageFile.getPath(), mImageView);
                     if (null != bitmap) {
-                        mTextView.setText("Successfully take image by camera.");
+                        mTextView.setText("Successfully take image by camera.\n");
                         mImageView.setImageBitmap(bitmap);
                         executeMLModel(bitmap);
                     }
