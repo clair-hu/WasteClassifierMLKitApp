@@ -1,0 +1,5 @@
+<resources>
+    <string name="app_name">WasteClassifier</string>
+    <string name="REMOTE_MODEL_NAME">Waste_2019510164317</string>
+    <string name="LOCAL_MODEL_NAME">my_local_model</string>
+</resources>
