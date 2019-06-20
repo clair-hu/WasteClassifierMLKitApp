@@ -14,10 +14,8 @@ import android.widget.TextView;
 
 import androidx.annotation.NonNull;
 
-import com.google.android.gms.tasks.OnCompleteListener;
 import com.google.android.gms.tasks.OnFailureListener;
 import com.google.android.gms.tasks.OnSuccessListener;
-import com.google.android.gms.tasks.Task;
 import com.google.firebase.ml.common.FirebaseMLException;
 import com.google.firebase.ml.common.modeldownload.FirebaseLocalModel;
 import com.google.firebase.ml.common.modeldownload.FirebaseModelDownloadConditions;
@@ -126,8 +124,9 @@ public class AutoMLActivity extends BaseActivity {
                         bitmap = resizeImage(imageFile, path, mImageView);
                     }
                     if (null != bitmap) {
-                        mTextView.setTextColor(Color.BLACK);
+
                         mTextView.setText("Sucessfully get image from album.\n");
+                        mTextView.setTextColor(Color.BLACK);
                         mImageView.setImageBitmap(bitmap);
                         executeMLModel(bitmap);
                     }
@@ -209,6 +208,7 @@ public class AutoMLActivity extends BaseActivity {
         for (FirebaseVisionImageLabel label : labels) {
             mTextView.setText("Object is " + label.getText() + "\n");
             mTextView.append("Confidence is " + label.getConfidence() + "\n");
+            mTextView.setTextColor(Color.BLACK);
         }
 
         // if no label detected, the classifier cannot predict the waste's type
@@ -233,7 +233,7 @@ public class AutoMLActivity extends BaseActivity {
             @Override
             public void onFailure(@NonNull Exception e) {
                 mTextView.setText("Unable to predict the type of waste.");
-                mTextView.setTextColor(Color.RED);
+//                mTextView.setTextColor(Color.RED);
             }
         });
 
