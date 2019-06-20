@@ -14,8 +14,10 @@ import android.widget.TextView;
 
 import androidx.annotation.NonNull;
 
+import com.google.android.gms.tasks.OnCompleteListener;
 import com.google.android.gms.tasks.OnFailureListener;
 import com.google.android.gms.tasks.OnSuccessListener;
+import com.google.android.gms.tasks.Task;
 import com.google.firebase.ml.common.FirebaseMLException;
 import com.google.firebase.ml.common.modeldownload.FirebaseLocalModel;
 import com.google.firebase.ml.common.modeldownload.FirebaseModelDownloadConditions;
@@ -90,7 +92,6 @@ public class AutoMLActivity extends BaseActivity {
         // run the image labeler
         FirebaseVisionOnDeviceAutoMLImageLabelerOptions labelerOptions =
                 new FirebaseVisionOnDeviceAutoMLImageLabelerOptions.Builder()
-                    // TODO REGISTER LOCAL MODEL!!
                 .setLocalModelName(LOCAL_MODEL_NAME)
                 .setRemoteModelName(REMOTE_MODEL_NAME)
                 .setConfidenceThreshold(0.65f)
@@ -125,6 +126,7 @@ public class AutoMLActivity extends BaseActivity {
                         bitmap = resizeImage(imageFile, path, mImageView);
                     }
                     if (null != bitmap) {
+                        mTextView.setTextColor(Color.BLACK);
                         mTextView.setText("Sucessfully get image from album.\n");
                         mImageView.setImageBitmap(bitmap);
                         executeMLModel(bitmap);
@@ -208,6 +210,12 @@ public class AutoMLActivity extends BaseActivity {
             mTextView.setText("Object is " + label.getText() + "\n");
             mTextView.append("Confidence is " + label.getConfidence() + "\n");
         }
+
+        // if no label detected, the classifier cannot predict the waste's type
+        if (0 == labels.size()) {
+            mTextView.setText("Unable to predict the type of waste.");
+            mTextView.setTextColor(Color.RED);
+        }
     }
 
     /* get image and pass the image to the model labeler
@@ -224,10 +232,11 @@ public class AutoMLActivity extends BaseActivity {
         }).addOnFailureListener(new OnFailureListener() {
             @Override
             public void onFailure(@NonNull Exception e) {
-                mTextView.setText(e.getMessage());
+                mTextView.setText("Unable to predict the type of waste.");
                 mTextView.setTextColor(Color.RED);
             }
         });
+
     }
 
 
