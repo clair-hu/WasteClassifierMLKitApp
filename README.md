@@ -19,7 +19,7 @@ Hi! It is a **simple** waste classification android application developed with G
 ![Gallery](https://github.com/clair-hu/WasteClassifierMLKitApp/blob/master/img/gallery.png)
 * Camera
 
-![Camera](https://github.com/clair-hu/WasteClassifierMLKitApp/blob/master/img/camera.png)
+![Camera](https://github.com/clair-hu/WasteClassifierMLKitApp/blob/master/img/camera.jpg)
 * Output Page (tested on my HUAWEI P20 device)
 
 ![Output Page](https://github.com/clair-hu/WasteClassifierMLKitApp/blob/master/img/prediction_compost_type1.jpg)
