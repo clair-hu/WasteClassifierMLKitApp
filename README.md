@@ -10,10 +10,10 @@ Hi! It is a **simple** waste classification android application developed with G
 ## UI
 * Welcome Page
 
-![Welcome Page](https://github.com/clair-hu/WasteClassifierMLKitApp/blob/master/img/welcome_page.png)
+![Welcome Page](https://github.com/clair-hu/WasteClassifierMLKitApp/blob/master/img/welcome_page.jpg)
 * Main Page
 
-![Main Page](https://github.com/clair-hu/WasteClassifierMLKitApp/blob/master/img/main_page.png)
+![Main Page](https://github.com/clair-hu/WasteClassifierMLKitApp/blob/master/img/main_page.jpg)
 * Gallery
 
 ![Gallery](https://github.com/clair-hu/WasteClassifierMLKitApp/blob/master/img/gallery.png)
