@@ -6,7 +6,6 @@ import androidx.appcompat.app.ActionBar;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.core.app.ActivityCompat;
 import androidx.core.content.FileProvider;
-//import android.support.v4.content.FileProvider;
 
 import android.Manifest;
 import android.app.Activity;
@@ -23,7 +22,6 @@ import android.view.Menu;
 import android.view.MenuItem;
 
 import java.io.File;
-import java.io.FilePermission;
 
 public class BaseActivity extends AppCompatActivity {
     // constants
