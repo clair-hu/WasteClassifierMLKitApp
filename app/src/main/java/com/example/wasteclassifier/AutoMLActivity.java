@@ -9,13 +9,17 @@ import android.graphics.Color;
 import android.net.Uri;
 import android.os.Bundle;
 import android.provider.MediaStore;
+import android.view.View;
 import android.widget.ImageView;
 import android.widget.TextView;
 
 import androidx.annotation.NonNull;
+import androidx.recyclerview.widget.RecyclerView;
 
+import com.firebase.ui.database.FirebaseRecyclerAdapter;
 import com.google.android.gms.tasks.OnFailureListener;
 import com.google.android.gms.tasks.OnSuccessListener;
+import com.google.firebase.database.DatabaseReference;
 import com.google.firebase.ml.common.FirebaseMLException;
 import com.google.firebase.ml.common.modeldownload.FirebaseLocalModel;
 import com.google.firebase.ml.common.modeldownload.FirebaseModelDownloadConditions;
@@ -48,6 +52,25 @@ public class AutoMLActivity extends BaseActivity {
     private static final String LOCAL_MODEL_NAME = "my_local_model";
 
     private FirebaseVisionImageLabeler labeler;
+
+    public static class MessageViewHolder extends RecyclerView.ViewHolder {
+        ImageView uploadImageView;
+        TextView typeTextView;
+
+        public MessageViewHolder(View v) {
+            super(v);
+//            messageTextView = (TextView) itemView.findViewById(R.id.messageTextView);
+//            messageImageView = (ImageView) itemView.findViewById(R.id.messageImageView);
+//            messengerTextView = (TextView) itemView.findViewById(R.id.messengerTextView);
+//            messengerImageView = (CircleImageView) itemView.findViewById(R.id.messengerImageView);
+        }
+    }
+
+    // Firebase instance variables
+    // database
+    private DatabaseReference mFirebaseDatabaseReference;
+    private FirebaseRecyclerAdapter<ImageAndType, MessageViewHolder>
+            mFirebaseAdapter;
 
     @Override
     protected void onCreate (Bundle savedInstanceState) {
