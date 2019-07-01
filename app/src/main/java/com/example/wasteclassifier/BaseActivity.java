@@ -41,6 +41,7 @@ public class BaseActivity extends AppCompatActivity {
         if (null != actionBar) {
             actionBar.setDisplayHomeAsUpEnabled(true);
             // TODO check whether ACTION_BAR_TITLE useful
+
         }
     }
 
