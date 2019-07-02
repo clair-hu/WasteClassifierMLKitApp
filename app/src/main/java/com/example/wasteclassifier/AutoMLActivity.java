@@ -1,5 +1,6 @@
 package com.example.wasteclassifier;
 
+import android.app.ProgressDialog;
 import android.content.Context;
 import android.content.Intent;
 import android.database.Cursor;
@@ -11,8 +12,10 @@ import android.os.Bundle;
 import android.provider.MediaStore;
 import android.view.View;
 import android.widget.Button;
+import android.widget.EditText;
 import android.widget.ImageView;
 import android.widget.TextView;
+import android.widget.Toast;
 
 import androidx.annotation.NonNull;
 import androidx.recyclerview.widget.RecyclerView;
@@ -31,12 +34,18 @@ import com.google.firebase.ml.vision.common.FirebaseVisionImage;
 import com.google.firebase.ml.vision.label.FirebaseVisionImageLabel;
 import com.google.firebase.ml.vision.label.FirebaseVisionImageLabeler;
 import com.google.firebase.ml.vision.label.FirebaseVisionOnDeviceAutoMLImageLabelerOptions;
+import com.google.firebase.storage.FirebaseStorage;
+import com.google.firebase.storage.OnProgressListener;
+import com.google.firebase.storage.StorageReference;
+import com.google.firebase.storage.UploadTask;
 
+import java.io.ByteArrayOutputStream;
 import java.io.File;
 import java.io.FileNotFoundException;
 import java.io.FileOutputStream;
 import java.io.IOException;
 import java.util.List;
+import java.util.UUID;
 
 import static android.graphics.BitmapFactory.decodeFile;
 import static android.graphics.BitmapFactory.decodeStream;
@@ -46,6 +55,8 @@ public class AutoMLActivity extends BaseActivity {
     // view components
     private ImageView mImageView;
     private TextView mTextView;
+    private Button mSendButton;
+    private EditText mTypeEditText;
 
     // constants
     private static final String REMOTE_MODEL_NAME = "Waste_2019510164317";
@@ -54,26 +65,32 @@ public class AutoMLActivity extends BaseActivity {
 
     private FirebaseVisionImageLabeler labeler;
 
-    public static class MessageViewHolder extends RecyclerView.ViewHolder {
-        ImageView uploadImageView;
-        TextView typeTextView;
+    // firebase database
+//    public static class MessageViewHolder extends RecyclerView.ViewHolder {
+//        ImageView uploadImageView;
+//        TextView typeTextView;
+//
+//        public MessageViewHolder(View v) {
+//            super(v);
+////            messageTextView = (TextView) itemView.findViewById(R.id.messageTextView);
+////            messageImageView = (ImageView) itemView.findViewById(R.id.messageImageView);
+////            messengerTextView = (TextView) itemView.findViewById(R.id.messengerTextView);
+////            messengerImageView = (CircleImageView) itemView.findViewById(R.id.messengerImageView);
+//        }
+//    }
+//
+//    // Firebase instance variables
+//    // database
+//    private DatabaseReference mFirebaseDatabaseReference;
+//    private FirebaseRecyclerAdapter<ImageAndType, MessageViewHolder>
+//            mFirebaseAdapter;
 
-        public MessageViewHolder(View v) {
-            super(v);
-//            messageTextView = (TextView) itemView.findViewById(R.id.messageTextView);
-//            messageImageView = (ImageView) itemView.findViewById(R.id.messageImageView);
-//            messengerTextView = (TextView) itemView.findViewById(R.id.messengerTextView);
-//            messengerImageView = (CircleImageView) itemView.findViewById(R.id.messengerImageView);
-        }
-    }
+    FirebaseStorage storage = FirebaseStorage.getInstance();
 
-    private Button mSendButton;
+    // Create a storage reference from our app
+    StorageReference storageReference = storage.getReference();
 
-    // Firebase instance variables
-    // database
-    private DatabaseReference mFirebaseDatabaseReference;
-    private FirebaseRecyclerAdapter<ImageAndType, MessageViewHolder>
-            mFirebaseAdapter;
+    private Uri filePath;
 
     @Override
     protected void onCreate (Bundle savedInstanceState) {
@@ -230,7 +247,7 @@ public class AutoMLActivity extends BaseActivity {
        input: labels from labelers
        output: void
      */
-    private void extractLabel(List<FirebaseVisionImageLabel> labels) {
+    private void extractLabel(List<FirebaseVisionImageLabel> labels, Bitmap bitmap) {
         for (FirebaseVisionImageLabel label : labels) {
             mTextView.setText("Object is " + label.getText() + "\n");
             mTextView.append("Confidence is " + label.getConfidence() + "\n");
@@ -241,6 +258,36 @@ public class AutoMLActivity extends BaseActivity {
         if (0 == labels.size()) {
             mTextView.setText("Unable to predict the type of waste.");
             mTextView.setTextColor(Color.RED);
+
+//            //todo create a function
+//
+            // Create a reference to "house.jpg"
+            StorageReference houseRef = storageReference.child("house.jpg");
+
+            // Create a reference to 'images/house.jpg'
+            StorageReference houseImagesRef = storageReference.child("images/house.jpg");
+
+            houseRef.getName().equals(houseImagesRef.getName());
+            houseRef.getPath().equals(houseImagesRef.getPath());
+
+            ByteArrayOutputStream baos = new ByteArrayOutputStream();
+            bitmap.compress(Bitmap.CompressFormat.JPEG, 100, baos);
+            byte[] data = baos.toByteArray();
+
+            UploadTask uploadTask = houseRef.putBytes(data);
+            uploadTask.addOnFailureListener(new OnFailureListener() {
+                @Override
+                public void onFailure(@NonNull Exception exception) {
+                    // Handle unsuccessful uploads
+                }
+            }).addOnSuccessListener(new OnSuccessListener<UploadTask.TaskSnapshot>() {
+                @Override
+                public void onSuccess(UploadTask.TaskSnapshot taskSnapshot) {
+                    // taskSnapshot.getMetadata() contains file metadata such as size, content-type, etc.
+                    // ...
+                }
+            });
+
         }
     }
 
@@ -248,12 +295,28 @@ public class AutoMLActivity extends BaseActivity {
        input: image in Bitmap format
        output: void
      */
-    private void executeMLModel (Bitmap bitmap) {
+//    private void executeMLModel (Bitmap bitmap) {
+//        FirebaseVisionImage image = FirebaseVisionImage.fromBitmap(bitmap);
+//        labeler.processImage(image).addOnSuccessListener(new OnSuccessListener<List<FirebaseVisionImageLabel>>() {
+//            @Override
+//            public void onSuccess(List<FirebaseVisionImageLabel> firebaseVisionImageLabels) {
+//                extractLabel(firebaseVisionImageLabels);
+//            }
+//        }).addOnFailureListener(new OnFailureListener() {
+//            @Override
+//            public void onFailure(@NonNull Exception e) {
+//                mTextView.setText("Unable to predict the type of waste.");
+////                mTextView.setTextColor(Color.RED);
+//            }
+//        });
+//
+//    }
+    private void executeMLModel (final Bitmap bitmap) {
         FirebaseVisionImage image = FirebaseVisionImage.fromBitmap(bitmap);
         labeler.processImage(image).addOnSuccessListener(new OnSuccessListener<List<FirebaseVisionImageLabel>>() {
             @Override
             public void onSuccess(List<FirebaseVisionImageLabel> firebaseVisionImageLabels) {
-                extractLabel(firebaseVisionImageLabels);
+                extractLabel(firebaseVisionImageLabels, bitmap);
             }
         }).addOnFailureListener(new OnFailureListener() {
             @Override
@@ -264,6 +327,41 @@ public class AutoMLActivity extends BaseActivity {
         });
 
     }
+
+//    private void uploadImage() {
+//
+//        if(filePath != null)
+//        {
+//            final ProgressDialog progressDialog = new ProgressDialog(this);
+//            progressDialog.setTitle("Uploading...");
+//            progressDialog.show();
+//
+//            StorageReference ref = storageReference.child("images/"+ UUID.randomUUID().toString());
+//            ref.putFile(filePath)
+//                    .addOnSuccessListener(new OnSuccessListener<UploadTask.TaskSnapshot>() {
+//                        @Override
+//                        public void onSuccess(UploadTask.TaskSnapshot taskSnapshot) {
+//                            progressDialog.dismiss();
+//                            Toast.makeText(AutoMLActivity.this, "Uploaded", Toast.LENGTH_SHORT).show();
+//                        }
+//                    })
+//                    .addOnFailureListener(new OnFailureListener() {
+//                        @Override
+//                        public void onFailure(@NonNull Exception e) {
+//                            progressDialog.dismiss();
+//                            Toast.makeText(AutoMLActivity.this, "Failed "+e.getMessage(), Toast.LENGTH_SHORT).show();
+//                        }
+//                    })
+//                    .addOnProgressListener(new OnProgressListener<UploadTask.TaskSnapshot>() {
+//                        @Override
+//                        public void onProgress(UploadTask.TaskSnapshot taskSnapshot) {
+//                            double progress = (100.0*taskSnapshot.getBytesTransferred()/taskSnapshot
+//                                    .getTotalByteCount());
+//                            progressDialog.setMessage("Uploaded "+(int)progress+"%");
+//                        }
+//                    });
+//        }
+//    }
 
 
 }
