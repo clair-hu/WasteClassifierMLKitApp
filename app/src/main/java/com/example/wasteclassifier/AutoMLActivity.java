@@ -16,6 +16,8 @@ import android.view.View;
 import android.widget.Button;
 import android.widget.EditText;
 import android.widget.ImageView;
+import android.widget.RadioButton;
+import android.widget.RadioGroup;
 import android.widget.TextView;
 import android.widget.Toast;
 
@@ -59,7 +61,8 @@ public class AutoMLActivity extends BaseActivity {
     private ImageView mImageView;
     private TextView mTextView;
     private Button mSendButton;
-    private EditText mWasteTypeEditText;
+//    private EditText mWasteTypeEditText;
+    private RadioGroup wasteTypeGroup;
 
     // constants
     private static final String REMOTE_MODEL_NAME = "Waste_2019510164317";
@@ -103,6 +106,11 @@ public class AutoMLActivity extends BaseActivity {
         setContentView(R.layout.activity_automl);
         mImageView = findViewById(R.id.image_view);
         mTextView = findViewById(R.id.text_view);
+        mSendButton = findViewById(R.id.send_button);
+
+        wasteTypeGroup = findViewById(R.id.waste_type_group);
+        mSendButton.setVisibility(View.INVISIBLE);
+        wasteTypeGroup.setVisibility(View.INVISIBLE);
 
         // configure firebase-hosted model source
 
@@ -262,30 +270,38 @@ public class AutoMLActivity extends BaseActivity {
             mTextView.setText("Unable to predict the type of waste.");
             mTextView.setTextColor(Color.RED);
 
-        uploadImageAndTypeToStorage(bitmap);
+            mSendButton.setVisibility(View.VISIBLE);
+            wasteTypeGroup.setVisibility(View.VISIBLE);
+            uploadImageAndTypeToStorage(bitmap);
 
 
         }
     }
 
     private void uploadImageAndTypeToStorage(final Bitmap bitmap) {
-        getWasteTypeFromEdittext();
-        mSendButton = findViewById(R.id.send_button);
+//        getWasteTypeFromEdittext();
+        getWasteType();
+
         mSendButton.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
 
                 // Create a reference to "house.jpg"
-                StorageReference houseRef = storageReference.child("compost.jpg");
+                StorageReference houseRef = storageReference.child("waste.jpg");
 
                 // Create a reference to 'images/house.jpg'
-                StorageReference houseImagesRef = storageReference.child("images/compost.jpg");
+                StorageReference houseImagesRef = storageReference.child("images/waste.jpg");
 
                 houseRef.getName().equals(houseImagesRef.getName());
                 houseRef.getPath().equals(houseImagesRef.getPath());
 
+                int selectedId = wasteTypeGroup.getCheckedRadioButtonId();
+                RadioButton radioButton = wasteTypeGroup.findViewById(selectedId);
+                String type = radioButton.getText().toString();
+
+
                 StorageMetadata metadata = new StorageMetadata.Builder()
-                        .setCustomMetadata("wasteType", mWasteTypeEditText.getText().toString())
+                        .setCustomMetadata("wasteType", type)
                         .build();
 
                 ByteArrayOutputStream baos = new ByteArrayOutputStream();
@@ -301,6 +317,10 @@ public class AutoMLActivity extends BaseActivity {
                 }).addOnSuccessListener(new OnSuccessListener<UploadTask.TaskSnapshot>() {
                     @Override
                     public void onSuccess(UploadTask.TaskSnapshot taskSnapshot) {
+                        mTextView.setText("Successfully uploaded the image and waste type to our database. Thank you!");
+                        mTextView.setTextColor(Color.BLACK);
+                        mSendButton.setVisibility(View.INVISIBLE);
+                        wasteTypeGroup.setVisibility(View.INVISIBLE);
                         // taskSnapshot.getMetadata() contains file metadata such as size, content-type, etc.
                         // ...
                     }
@@ -309,30 +329,70 @@ public class AutoMLActivity extends BaseActivity {
         });
     }
 
-    private void getWasteTypeFromEdittext(){
-        mWasteTypeEditText = findViewById(R.id.waste_type_edittext);
-        mWasteTypeEditText.addTextChangedListener(new TextWatcher() {
-            @Override
-            public void beforeTextChanged(CharSequence charSequence, int i, int i1, int i2) {
+    private void getWasteType () {
 
-            }
-
+        wasteTypeGroup.setOnCheckedChangeListener(new RadioGroup.OnCheckedChangeListener() {
             @Override
-            public void onTextChanged(CharSequence charSequence, int i, int i1, int i2) {
-                if (charSequence.toString().trim().length() > 0) {
-                    mSendButton.setEnabled(true);
-                }
-                else {
+            public void onCheckedChanged(RadioGroup radioGroup, int i) {
+                if (i == -1) {
                     mSendButton.setEnabled(false);
                 }
-            }
-
-            @Override
-            public void afterTextChanged(Editable editable) {
-
+                else {
+                    mSendButton.setEnabled(true);
+                }
+                RadioButton radioButton = radioGroup.findViewById(i);
             }
         });
+
     }
+
+//    private void getWasteTypeFromEdittext(){
+//        mWasteTypeEditText = findViewById(R.id.waste_type_edittext);
+//        mWasteTypeEditText.addTextChangedListener(new TextWatcher() {
+//            @Override
+//            public void beforeTextChanged(CharSequence charSequence, int i, int i1, int i2) {
+//
+//            }
+//
+//            @Override
+//            public void onTextChanged(CharSequence charSequence, int i, int i1, int i2) {
+//                if (charSequence.toString().trim().length() > 0) {
+//                    mSendButton.setEnabled(true);
+//                }
+//                else {
+//                    mSendButton.setEnabled(false);
+//                }
+//            }
+//
+//            @Override
+//            public void afterTextChanged(Editable editable) {
+//
+//            }
+//        });
+//    }
+
+//    public void onRadioButtonClicked() {
+//        // Is the button now checked?
+//        boolean checked = ((RadioButton) view).isChecked();
+//
+//        // Check which radio button was clicked
+//        switch(view.getId()) {
+//            case R.id.recycle_radio_button:
+//                if (checked)
+//                    wasteType = "recycle";
+//                    break;
+//            case R.id.compost_radio_button:
+//                if (checked)
+//                    wasteType = "compost";
+//                break;
+//            case R.id.trash_radio_button:
+//                if (checked)
+//                    wasteType = "trash";
+//                break;
+//        }
+//    }
+
+
 
     /* get image and pass the image to the model labeler
        input: image in Bitmap format
