@@ -49,6 +49,9 @@ import java.io.File;
 import java.io.FileNotFoundException;
 import java.io.FileOutputStream;
 import java.io.IOException;
+import java.text.DateFormat;
+import java.text.SimpleDateFormat;
+import java.util.Date;
 import java.util.List;
 import java.util.UUID;
 
@@ -286,29 +289,27 @@ public class AutoMLActivity extends BaseActivity {
             @Override
             public void onClick(View view) {
 
-                // Create a reference to "house.jpg"
-                StorageReference houseRef = storageReference.child("waste.jpg");
-
-                // Create a reference to 'images/house.jpg'
-                StorageReference houseImagesRef = storageReference.child("images/waste.jpg");
-
-                houseRef.getName().equals(houseImagesRef.getName());
-                houseRef.getPath().equals(houseImagesRef.getPath());
-
                 int selectedId = wasteTypeGroup.getCheckedRadioButtonId();
                 RadioButton radioButton = wasteTypeGroup.findViewById(selectedId);
-                String type = radioButton.getText().toString();
+                String wasteType = radioButton.getText().toString();
 
+                // Create a reference to type folder and image path
+                Date date = new Date();
+                DateFormat dateFormat = new SimpleDateFormat("yyyy_mm_dd_hhmmss");
+                String strDate = dateFormat.format(date);
+                String refPath = "/" + wasteType + "/" + wasteType + "_" + strDate + ".jpg";
+
+                StorageReference imageRef = storageReference.child(refPath);
 
                 StorageMetadata metadata = new StorageMetadata.Builder()
-                        .setCustomMetadata("wasteType", type)
+                        .setCustomMetadata("wasteType", wasteType)
                         .build();
 
                 ByteArrayOutputStream baos = new ByteArrayOutputStream();
                 bitmap.compress(Bitmap.CompressFormat.JPEG, 100, baos);
                 byte[] data = baos.toByteArray();
 
-                UploadTask uploadTask = houseRef.putBytes(data, metadata);
+                UploadTask uploadTask = imageRef.putBytes(data, metadata);
                 uploadTask.addOnFailureListener(new OnFailureListener() {
                     @Override
                     public void onFailure(@NonNull Exception exception) {
@@ -317,12 +318,11 @@ public class AutoMLActivity extends BaseActivity {
                 }).addOnSuccessListener(new OnSuccessListener<UploadTask.TaskSnapshot>() {
                     @Override
                     public void onSuccess(UploadTask.TaskSnapshot taskSnapshot) {
-                        mTextView.setText("Successfully uploaded the image and waste type to our database. Thank you!");
+                        mTextView.setText("Successfully uploaded the image and waste type to our database.");
+                        mTextView.append("Thank you!");
                         mTextView.setTextColor(Color.BLACK);
                         mSendButton.setVisibility(View.INVISIBLE);
                         wasteTypeGroup.setVisibility(View.INVISIBLE);
-                        // taskSnapshot.getMetadata() contains file metadata such as size, content-type, etc.
-                        // ...
                     }
                 });
             }
