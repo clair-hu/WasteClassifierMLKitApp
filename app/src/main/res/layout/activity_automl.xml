@@ -36,7 +36,7 @@
             android:orientation="horizontal">
 
             <EditText
-                android:id="@+id/type_text"
+                android:id="@+id/waste_type_edittext"
                 android:layout_width="0dp"
                 android:layout_height="wrap_content"
                 android:layout_gravity="center_vertical"

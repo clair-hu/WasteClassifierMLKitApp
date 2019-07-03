@@ -10,6 +10,8 @@ import android.graphics.Color;
 import android.net.Uri;
 import android.os.Bundle;
 import android.provider.MediaStore;
+import android.text.Editable;
+import android.text.TextWatcher;
 import android.view.View;
 import android.widget.Button;
 import android.widget.EditText;
@@ -57,7 +59,7 @@ public class AutoMLActivity extends BaseActivity {
     private ImageView mImageView;
     private TextView mTextView;
     private Button mSendButton;
-    private EditText mTypeEditText;
+    private EditText mWasteTypeEditText;
 
     // constants
     private static final String REMOTE_MODEL_NAME = "Waste_2019510164317";
@@ -266,35 +268,68 @@ public class AutoMLActivity extends BaseActivity {
         }
     }
 
-    private void uploadImageAndTypeToStorage(Bitmap bitmap) {
-        // Create a reference to "house.jpg"
-        StorageReference houseRef = storageReference.child("trash.jpg");
-
-        // Create a reference to 'images/house.jpg'
-        StorageReference houseImagesRef = storageReference.child("images/trash.jpg");
-
-        houseRef.getName().equals(houseImagesRef.getName());
-        houseRef.getPath().equals(houseImagesRef.getPath());
-
-        StorageMetadata metadata = new StorageMetadata.Builder()
-                .setCustomMetadata("wasteType", "trash")
-                .build();
-
-        ByteArrayOutputStream baos = new ByteArrayOutputStream();
-        bitmap.compress(Bitmap.CompressFormat.JPEG, 100, baos);
-        byte[] data = baos.toByteArray();
-
-        UploadTask uploadTask = houseRef.putBytes(data, metadata);
-        uploadTask.addOnFailureListener(new OnFailureListener() {
+    private void uploadImageAndTypeToStorage(final Bitmap bitmap) {
+        getWasteTypeFromEdittext();
+        mSendButton = findViewById(R.id.send_button);
+        mSendButton.setOnClickListener(new View.OnClickListener() {
             @Override
-            public void onFailure(@NonNull Exception exception) {
-                // Handle unsuccessful uploads
+            public void onClick(View view) {
+
+                // Create a reference to "house.jpg"
+                StorageReference houseRef = storageReference.child("compost.jpg");
+
+                // Create a reference to 'images/house.jpg'
+                StorageReference houseImagesRef = storageReference.child("images/compost.jpg");
+
+                houseRef.getName().equals(houseImagesRef.getName());
+                houseRef.getPath().equals(houseImagesRef.getPath());
+
+                StorageMetadata metadata = new StorageMetadata.Builder()
+                        .setCustomMetadata("wasteType", mWasteTypeEditText.getText().toString())
+                        .build();
+
+                ByteArrayOutputStream baos = new ByteArrayOutputStream();
+                bitmap.compress(Bitmap.CompressFormat.JPEG, 100, baos);
+                byte[] data = baos.toByteArray();
+
+                UploadTask uploadTask = houseRef.putBytes(data, metadata);
+                uploadTask.addOnFailureListener(new OnFailureListener() {
+                    @Override
+                    public void onFailure(@NonNull Exception exception) {
+                        // Handle unsuccessful uploads
+                    }
+                }).addOnSuccessListener(new OnSuccessListener<UploadTask.TaskSnapshot>() {
+                    @Override
+                    public void onSuccess(UploadTask.TaskSnapshot taskSnapshot) {
+                        // taskSnapshot.getMetadata() contains file metadata such as size, content-type, etc.
+                        // ...
+                    }
+                });
             }
-        }).addOnSuccessListener(new OnSuccessListener<UploadTask.TaskSnapshot>() {
+        });
+    }
+
+    private void getWasteTypeFromEdittext(){
+        mWasteTypeEditText = findViewById(R.id.waste_type_edittext);
+        mWasteTypeEditText.addTextChangedListener(new TextWatcher() {
             @Override
-            public void onSuccess(UploadTask.TaskSnapshot taskSnapshot) {
-                // taskSnapshot.getMetadata() contains file metadata such as size, content-type, etc.
-                // ...
+            public void beforeTextChanged(CharSequence charSequence, int i, int i1, int i2) {
+
+            }
+
+            @Override
+            public void onTextChanged(CharSequence charSequence, int i, int i1, int i2) {
+                if (charSequence.toString().trim().length() > 0) {
+                    mSendButton.setEnabled(true);
+                }
+                else {
+                    mSendButton.setEnabled(false);
+                }
+            }
+
+            @Override
+            public void afterTextChanged(Editable editable) {
+
             }
         });
     }
