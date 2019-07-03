@@ -36,6 +36,7 @@ import com.google.firebase.ml.vision.label.FirebaseVisionImageLabeler;
 import com.google.firebase.ml.vision.label.FirebaseVisionOnDeviceAutoMLImageLabelerOptions;
 import com.google.firebase.storage.FirebaseStorage;
 import com.google.firebase.storage.OnProgressListener;
+import com.google.firebase.storage.StorageMetadata;
 import com.google.firebase.storage.StorageReference;
 import com.google.firebase.storage.UploadTask;
 
@@ -133,10 +134,10 @@ public class AutoMLActivity extends BaseActivity {
         // run the image labeler
         FirebaseVisionOnDeviceAutoMLImageLabelerOptions labelerOptions =
                 new FirebaseVisionOnDeviceAutoMLImageLabelerOptions.Builder()
-                .setLocalModelName(LOCAL_MODEL_NAME)
-                .setRemoteModelName(REMOTE_MODEL_NAME)
-                .setConfidenceThreshold(0.65f)
-                .build();
+                        .setLocalModelName(LOCAL_MODEL_NAME)
+                        .setRemoteModelName(REMOTE_MODEL_NAME)
+                        .setConfidenceThreshold(0.65f)
+                        .build();
 
         try {
             labeler = FirebaseVision.getInstance().getOnDeviceAutoMLImageLabeler(labelerOptions);
@@ -259,36 +260,43 @@ public class AutoMLActivity extends BaseActivity {
             mTextView.setText("Unable to predict the type of waste.");
             mTextView.setTextColor(Color.RED);
 
-//            //todo create a function
-//
-            // Create a reference to "house.jpg"
-            StorageReference houseRef = storageReference.child("house.jpg");
+        uploadImageAndTypeToStorage(bitmap);
 
-            // Create a reference to 'images/house.jpg'
-            StorageReference houseImagesRef = storageReference.child("images/house.jpg");
-
-            houseRef.getName().equals(houseImagesRef.getName());
-            houseRef.getPath().equals(houseImagesRef.getPath());
-
-            ByteArrayOutputStream baos = new ByteArrayOutputStream();
-            bitmap.compress(Bitmap.CompressFormat.JPEG, 100, baos);
-            byte[] data = baos.toByteArray();
-
-            UploadTask uploadTask = houseRef.putBytes(data);
-            uploadTask.addOnFailureListener(new OnFailureListener() {
-                @Override
-                public void onFailure(@NonNull Exception exception) {
-                    // Handle unsuccessful uploads
-                }
-            }).addOnSuccessListener(new OnSuccessListener<UploadTask.TaskSnapshot>() {
-                @Override
-                public void onSuccess(UploadTask.TaskSnapshot taskSnapshot) {
-                    // taskSnapshot.getMetadata() contains file metadata such as size, content-type, etc.
-                    // ...
-                }
-            });
 
         }
+    }
+
+    private void uploadImageAndTypeToStorage(Bitmap bitmap) {
+        // Create a reference to "house.jpg"
+        StorageReference houseRef = storageReference.child("trash.jpg");
+
+        // Create a reference to 'images/house.jpg'
+        StorageReference houseImagesRef = storageReference.child("images/trash.jpg");
+
+        houseRef.getName().equals(houseImagesRef.getName());
+        houseRef.getPath().equals(houseImagesRef.getPath());
+
+        StorageMetadata metadata = new StorageMetadata.Builder()
+                .setCustomMetadata("wasteType", "trash")
+                .build();
+
+        ByteArrayOutputStream baos = new ByteArrayOutputStream();
+        bitmap.compress(Bitmap.CompressFormat.JPEG, 100, baos);
+        byte[] data = baos.toByteArray();
+
+        UploadTask uploadTask = houseRef.putBytes(data, metadata);
+        uploadTask.addOnFailureListener(new OnFailureListener() {
+            @Override
+            public void onFailure(@NonNull Exception exception) {
+                // Handle unsuccessful uploads
+            }
+        }).addOnSuccessListener(new OnSuccessListener<UploadTask.TaskSnapshot>() {
+            @Override
+            public void onSuccess(UploadTask.TaskSnapshot taskSnapshot) {
+                // taskSnapshot.getMetadata() contains file metadata such as size, content-type, etc.
+                // ...
+            }
+        });
     }
 
     /* get image and pass the image to the model labeler
