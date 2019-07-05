@@ -310,6 +310,7 @@ public class AutoMLActivity extends BaseActivity {
                 byte[] data = baos.toByteArray();
 
                 UploadTask uploadTask = imageRef.putBytes(data, metadata);
+                radioButton.setChecked(false);
                 uploadTask.addOnFailureListener(new OnFailureListener() {
                     @Override
                     public void onFailure(@NonNull Exception exception) {
