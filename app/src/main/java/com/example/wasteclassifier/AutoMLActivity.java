@@ -275,7 +275,7 @@ public class AutoMLActivity extends BaseActivity {
 
                 // Create a reference to type folder and image path
                 Date date = new Date();
-                DateFormat dateFormat = new SimpleDateFormat("yyyy_mm_dd_hhmmss");
+                DateFormat dateFormat = new SimpleDateFormat("yyyy_MM_dd_HHmmss");
                 String strDate = dateFormat.format(date);
                 String refPath = "/" + wasteType + "/" + wasteType + "_" + strDate + ".jpg";
 
