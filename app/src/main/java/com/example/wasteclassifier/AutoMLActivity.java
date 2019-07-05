@@ -74,26 +74,6 @@ public class AutoMLActivity extends BaseActivity {
 
     private FirebaseVisionImageLabeler labeler;
 
-    // firebase database
-//    public static class MessageViewHolder extends RecyclerView.ViewHolder {
-//        ImageView uploadImageView;
-//        TextView typeTextView;
-//
-//        public MessageViewHolder(View v) {
-//            super(v);
-////            messageTextView = (TextView) itemView.findViewById(R.id.messageTextView);
-////            messageImageView = (ImageView) itemView.findViewById(R.id.messageImageView);
-////            messengerTextView = (TextView) itemView.findViewById(R.id.messengerTextView);
-////            messengerImageView = (CircleImageView) itemView.findViewById(R.id.messengerImageView);
-//        }
-//    }
-//
-//    // Firebase instance variables
-//    // database
-//    private DatabaseReference mFirebaseDatabaseReference;
-//    private FirebaseRecyclerAdapter<ImageAndType, MessageViewHolder>
-//            mFirebaseAdapter;
-
     FirebaseStorage storage = FirebaseStorage.getInstance();
 
     // Create a storage reference from our app
