@@ -26,6 +26,13 @@ Hi! It is a **simple** waste classification android application developed with G
 ![Output Page](https://github.com/clair-hu/WasteClassifierMLKitApp/blob/master/img/prediction_compost_type2.jpg)
 ![Output Page](https://github.com/clair-hu/WasteClassifierMLKitApp/blob/master/img/prediction_recycle_type.jpg)
 
+* Unable to predict image type page
+
+![Unable to predict image type page](https://github.com/clair-hu/WasteClassifierMLKitApp/blob/master/img/unable_to_predict_page.jpg)
+* Thanks for uploading image and type to firebase storage
+
+![Thanks for uploading image and type to firebase storage](https://github.com/clair-hu/WasteClassifierMLKitApp/blob/master/img/thank_for_uploading.jpg)
+
 ## Firebase
 
 Firebase is a comprehensive mobile development platform. It is integrated with Google ML Kit.
