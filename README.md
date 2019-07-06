@@ -4,6 +4,8 @@ Hi! It is a **simple** waste classification android application developed with G
 
 * I am using the model trained by AutoML api by H20.ai which is integrated in ML Kit. 
 
+* If the image cannot be classified by the model, the application will ask users to provide the waste type if they know the answer. The image and the type will be uploaded to firebase storage automatically with user consent.
+
 * It is a good quick practise to getting familiar with firebase, autoML, and ML Kit. (I spent two work days to develop the first version.)
 
 
