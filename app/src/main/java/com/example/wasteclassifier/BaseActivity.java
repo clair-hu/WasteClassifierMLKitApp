@@ -123,9 +123,6 @@ public class BaseActivity extends AppCompatActivity {
         startActivityForResult(intent, RC_TAKE_PICTURE);
     }
 
-
-
-
     /* check storage permission
        input: requestCode (check what)
        output: void

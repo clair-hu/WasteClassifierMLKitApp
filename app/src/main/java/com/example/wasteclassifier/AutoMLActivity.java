@@ -1,6 +1,5 @@
 package com.example.wasteclassifier;
 
-import android.app.ProgressDialog;
 import android.content.Context;
 import android.content.Intent;
 import android.database.Cursor;
@@ -10,24 +9,17 @@ import android.graphics.Color;
 import android.net.Uri;
 import android.os.Bundle;
 import android.provider.MediaStore;
-import android.text.Editable;
-import android.text.TextWatcher;
 import android.view.View;
 import android.widget.Button;
-import android.widget.EditText;
 import android.widget.ImageView;
 import android.widget.RadioButton;
 import android.widget.RadioGroup;
 import android.widget.TextView;
-import android.widget.Toast;
 
 import androidx.annotation.NonNull;
-import androidx.recyclerview.widget.RecyclerView;
 
-import com.firebase.ui.database.FirebaseRecyclerAdapter;
 import com.google.android.gms.tasks.OnFailureListener;
 import com.google.android.gms.tasks.OnSuccessListener;
-import com.google.firebase.database.DatabaseReference;
 import com.google.firebase.ml.common.FirebaseMLException;
 import com.google.firebase.ml.common.modeldownload.FirebaseLocalModel;
 import com.google.firebase.ml.common.modeldownload.FirebaseModelDownloadConditions;
@@ -39,7 +31,6 @@ import com.google.firebase.ml.vision.label.FirebaseVisionImageLabel;
 import com.google.firebase.ml.vision.label.FirebaseVisionImageLabeler;
 import com.google.firebase.ml.vision.label.FirebaseVisionOnDeviceAutoMLImageLabelerOptions;
 import com.google.firebase.storage.FirebaseStorage;
-import com.google.firebase.storage.OnProgressListener;
 import com.google.firebase.storage.StorageMetadata;
 import com.google.firebase.storage.StorageReference;
 import com.google.firebase.storage.UploadTask;
@@ -53,7 +44,6 @@ import java.text.DateFormat;
 import java.text.SimpleDateFormat;
 import java.util.Date;
 import java.util.List;
-import java.util.UUID;
 
 import static android.graphics.BitmapFactory.decodeFile;
 import static android.graphics.BitmapFactory.decodeStream;
@@ -64,7 +54,6 @@ public class AutoMLActivity extends BaseActivity {
     private ImageView mImageView;
     private TextView mTextView;
     private Button mSendButton;
-//    private EditText mWasteTypeEditText;
     private RadioGroup wasteTypeGroup;
 
     // constants
@@ -78,8 +67,6 @@ public class AutoMLActivity extends BaseActivity {
 
     // Create a storage reference from our app
     StorageReference storageReference = storage.getReference();
-
-    private Uri filePath;
 
     @Override
     protected void onCreate (Bundle savedInstanceState) {
@@ -238,7 +225,7 @@ public class AutoMLActivity extends BaseActivity {
     }
 
     /* extract object type and confidence of the prediction from classified label from the labeler
-       input: labels from labelers
+       input: labels from labelers, and image in the type of bitmap
        output: void
      */
     private void extractLabel(List<FirebaseVisionImageLabel> labels, Bitmap bitmap) {
@@ -250,19 +237,22 @@ public class AutoMLActivity extends BaseActivity {
 
         // if no label detected, the classifier cannot predict the waste's type
         if (0 == labels.size()) {
-            mTextView.setText("Unable to predict the type of waste.");
+            mTextView.setText("Unable to predict the type of waste. Can you help us collecting data if you know the answer?");
             mTextView.setTextColor(Color.RED);
 
             mSendButton.setVisibility(View.VISIBLE);
             wasteTypeGroup.setVisibility(View.VISIBLE);
             uploadImageAndTypeToStorage(bitmap);
-
-
         }
     }
 
+
+    /* upload the un-predictable image and its type to the firebase storage
+       input: the image in the type of bitmap
+       output: void
+
+     */
     private void uploadImageAndTypeToStorage(final Bitmap bitmap) {
-//        getWasteTypeFromEdittext();
         getWasteType();
 
         mSendButton.setOnClickListener(new View.OnClickListener() {
@@ -299,8 +289,7 @@ public class AutoMLActivity extends BaseActivity {
                 }).addOnSuccessListener(new OnSuccessListener<UploadTask.TaskSnapshot>() {
                     @Override
                     public void onSuccess(UploadTask.TaskSnapshot taskSnapshot) {
-                        mTextView.setText("Successfully uploaded the image and waste type to our database.");
-                        mTextView.append("Thank you!");
+                        mTextView.setText("Thank you for successfully uploading the data to our database.");
                         mTextView.setTextColor(Color.BLACK);
                         mSendButton.setVisibility(View.INVISIBLE);
                         wasteTypeGroup.setVisibility(View.INVISIBLE);
@@ -321,80 +310,15 @@ public class AutoMLActivity extends BaseActivity {
                 else {
                     mSendButton.setEnabled(true);
                 }
-                RadioButton radioButton = radioGroup.findViewById(i);
             }
         });
 
     }
 
-//    private void getWasteTypeFromEdittext(){
-//        mWasteTypeEditText = findViewById(R.id.waste_type_edittext);
-//        mWasteTypeEditText.addTextChangedListener(new TextWatcher() {
-//            @Override
-//            public void beforeTextChanged(CharSequence charSequence, int i, int i1, int i2) {
-//
-//            }
-//
-//            @Override
-//            public void onTextChanged(CharSequence charSequence, int i, int i1, int i2) {
-//                if (charSequence.toString().trim().length() > 0) {
-//                    mSendButton.setEnabled(true);
-//                }
-//                else {
-//                    mSendButton.setEnabled(false);
-//                }
-//            }
-//
-//            @Override
-//            public void afterTextChanged(Editable editable) {
-//
-//            }
-//        });
-//    }
-
-//    public void onRadioButtonClicked() {
-//        // Is the button now checked?
-//        boolean checked = ((RadioButton) view).isChecked();
-//
-//        // Check which radio button was clicked
-//        switch(view.getId()) {
-//            case R.id.recycle_radio_button:
-//                if (checked)
-//                    wasteType = "recycle";
-//                    break;
-//            case R.id.compost_radio_button:
-//                if (checked)
-//                    wasteType = "compost";
-//                break;
-//            case R.id.trash_radio_button:
-//                if (checked)
-//                    wasteType = "trash";
-//                break;
-//        }
-//    }
-
-
-
     /* get image and pass the image to the model labeler
        input: image in Bitmap format
        output: void
      */
-//    private void executeMLModel (Bitmap bitmap) {
-//        FirebaseVisionImage image = FirebaseVisionImage.fromBitmap(bitmap);
-//        labeler.processImage(image).addOnSuccessListener(new OnSuccessListener<List<FirebaseVisionImageLabel>>() {
-//            @Override
-//            public void onSuccess(List<FirebaseVisionImageLabel> firebaseVisionImageLabels) {
-//                extractLabel(firebaseVisionImageLabels);
-//            }
-//        }).addOnFailureListener(new OnFailureListener() {
-//            @Override
-//            public void onFailure(@NonNull Exception e) {
-//                mTextView.setText("Unable to predict the type of waste.");
-////                mTextView.setTextColor(Color.RED);
-//            }
-//        });
-//
-//    }
     private void executeMLModel (final Bitmap bitmap) {
         FirebaseVisionImage image = FirebaseVisionImage.fromBitmap(bitmap);
         labeler.processImage(image).addOnSuccessListener(new OnSuccessListener<List<FirebaseVisionImageLabel>>() {
@@ -405,47 +329,13 @@ public class AutoMLActivity extends BaseActivity {
         }).addOnFailureListener(new OnFailureListener() {
             @Override
             public void onFailure(@NonNull Exception e) {
-                mTextView.setText("Unable to predict the type of waste.");
+                mTextView.setText("Unable to predict the type of waste. Can you help us collecting data if you know the answer?");
 //                mTextView.setTextColor(Color.RED);
             }
         });
 
     }
 
-//    private void uploadImage() {
-//
-//        if(filePath != null)
-//        {
-//            final ProgressDialog progressDialog = new ProgressDialog(this);
-//            progressDialog.setTitle("Uploading...");
-//            progressDialog.show();
-//
-//            StorageReference ref = storageReference.child("images/"+ UUID.randomUUID().toString());
-//            ref.putFile(filePath)
-//                    .addOnSuccessListener(new OnSuccessListener<UploadTask.TaskSnapshot>() {
-//                        @Override
-//                        public void onSuccess(UploadTask.TaskSnapshot taskSnapshot) {
-//                            progressDialog.dismiss();
-//                            Toast.makeText(AutoMLActivity.this, "Uploaded", Toast.LENGTH_SHORT).show();
-//                        }
-//                    })
-//                    .addOnFailureListener(new OnFailureListener() {
-//                        @Override
-//                        public void onFailure(@NonNull Exception e) {
-//                            progressDialog.dismiss();
-//                            Toast.makeText(AutoMLActivity.this, "Failed "+e.getMessage(), Toast.LENGTH_SHORT).show();
-//                        }
-//                    })
-//                    .addOnProgressListener(new OnProgressListener<UploadTask.TaskSnapshot>() {
-//                        @Override
-//                        public void onProgress(UploadTask.TaskSnapshot taskSnapshot) {
-//                            double progress = (100.0*taskSnapshot.getBytesTransferred()/taskSnapshot
-//                                    .getTotalByteCount());
-//                            progressDialog.setMessage("Uploaded "+(int)progress+"%");
-//                        }
-//                    });
-//        }
-//    }
 
 
 }

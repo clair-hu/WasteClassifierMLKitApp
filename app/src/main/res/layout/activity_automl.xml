@@ -21,7 +21,9 @@
             android:id="@+id/text_view"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:textSize="24dp"
+            android:layout_marginLeft="10dp"
+            android:layout_marginRight="10dp"
+            android:textSize="22dp"
             android:gravity="center"
             android:textStyle="bold"
             tools:text="The result will be shown here" />
@@ -38,7 +40,6 @@
 
             <RadioGroup
                 android:id="@+id/waste_type_group"
-                android:layout_marginLeft="10dp"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:orientation="horizontal">
@@ -70,6 +71,12 @@
                     android:layout_height="wrap_content"
                     android:layout_weight="1"
                     android:text="unknown" />
+
+                <Space
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_weight="1" />
+
             </RadioGroup>
 
             <Button
