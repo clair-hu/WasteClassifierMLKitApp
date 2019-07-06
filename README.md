@@ -1,6 +1,6 @@
 # # WasteClassifierMLKitApp
 
-Hi! It is a **simple** waste classification android application developed with Google ML Kit and firebase. 
+Hi! It is a **simple** waste classification android application developed with Google ML Kit and firebase storage. 
 
 * I am using the model trained by AutoML api by H20.ai which is integrated in ML Kit. 
 
@@ -38,6 +38,11 @@ Hi! It is a **simple** waste classification android application developed with G
 Firebase is a comprehensive mobile development platform. It is integrated with Google ML Kit.
 ![Connecting firebase to android application](https://github.com/clair-hu/WasteClassifierMLKitApp/blob/master/img/firebase_to_android_app.png)
 
+### Storage
+* Configure storage reference and metadata
+* Organize uploading destination - folder organization
+* Handling input changing
+* Handling uploading task success and failure
 
 ## AutoML
 
