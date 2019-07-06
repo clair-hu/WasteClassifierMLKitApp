@@ -35,6 +35,7 @@ Hi! It is a **simple** waste classification android application developed with G
 
 ## Firebase
 
+### Connection with Android application
 Firebase is a comprehensive mobile development platform. It is integrated with Google ML Kit.
 ![Connecting firebase to android application](https://github.com/clair-hu/WasteClassifierMLKitApp/blob/master/img/firebase_to_android_app.png)
 
@@ -68,4 +69,4 @@ You need to prepare your dataset to classification. The limitation of the datase
 
 ## Reference
 
-* Codes heavily depend on https://github.com/jirawatee/ML-Kit-for-Firebase-Android.git by jirawatee.
+* Codes partially depend on https://github.com/jirawatee/ML-Kit-for-Firebase-Android.git by jirawatee.
