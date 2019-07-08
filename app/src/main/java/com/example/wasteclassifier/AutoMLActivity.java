@@ -131,7 +131,7 @@ public class AutoMLActivity extends BaseActivity {
                 new FirebaseVisionOnDeviceAutoMLImageLabelerOptions.Builder()
                         .setLocalModelName(LOCAL_MODEL_NAME)
                         .setRemoteModelName(REMOTE_MODEL_NAME)
-                        .setConfidenceThreshold(0.65f)
+                        .setConfidenceThreshold(0.8f)
                         .build();
 
         try {
