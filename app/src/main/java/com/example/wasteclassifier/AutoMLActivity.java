@@ -81,6 +81,15 @@ public class AutoMLActivity extends BaseActivity {
         // connect to view
         setContentView(R.layout.activity_automl);
         mImageView = findViewById(R.id.image_view);
+
+        mImageView.setClickable(true);
+        mImageView.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                openCamera();
+            }
+        });
+
         mTextView = findViewById(R.id.text_view);
         mSendButton = findViewById(R.id.upload_button);
         validateButton = findViewById(R.id.validate_button);
@@ -131,7 +140,7 @@ public class AutoMLActivity extends BaseActivity {
                 new FirebaseVisionOnDeviceAutoMLImageLabelerOptions.Builder()
                         .setLocalModelName(LOCAL_MODEL_NAME)
                         .setRemoteModelName(REMOTE_MODEL_NAME)
-                        .setConfidenceThreshold(0.8f)
+                        .setConfidenceThreshold(0.65f)
                         .build();
 
         try {
@@ -397,6 +406,11 @@ public class AutoMLActivity extends BaseActivity {
         });
 
     }
+
+//    public void displayToast(String message) {
+//        Toast.makeText(getApplicationContext(), message,
+//                Toast.LENGTH_SHORT).show();
+//    }
 
 
 
