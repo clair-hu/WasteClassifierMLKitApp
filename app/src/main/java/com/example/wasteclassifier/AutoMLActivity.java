@@ -361,7 +361,7 @@ public class AutoMLActivity extends BaseActivity {
                 }).addOnSuccessListener(new OnSuccessListener<UploadTask.TaskSnapshot>() {
                     @Override
                     public void onSuccess(UploadTask.TaskSnapshot taskSnapshot) {
-//                        mTextView.setText("Thank you for successfully uploading the data to our database.");
+//                        mTextView.setText("Thank you for sharing the data to our database!");
 //                        mTextView.setTextColor(Color.BLACK);
                         uploadLinearLayout.setVisibility(View.GONE);
                         openThanksActivity();
