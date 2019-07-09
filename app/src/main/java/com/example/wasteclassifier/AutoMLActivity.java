@@ -311,6 +311,7 @@ public class AutoMLActivity extends BaseActivity {
                 else {
                     validateTextView.setVisibility(View.GONE);
                     validateLinearLayout.setVisibility(View.GONE);
+                    openThanksActivity();
                 }
                 validateTextView.setVisibility(View.GONE);
                 validateGroup.clearCheck();
@@ -360,11 +361,10 @@ public class AutoMLActivity extends BaseActivity {
                 }).addOnSuccessListener(new OnSuccessListener<UploadTask.TaskSnapshot>() {
                     @Override
                     public void onSuccess(UploadTask.TaskSnapshot taskSnapshot) {
-                        mTextView.setText("Thank you for successfully uploading the data to our database.");
-                        mTextView.setTextColor(Color.BLACK);
+//                        mTextView.setText("Thank you for successfully uploading the data to our database.");
+//                        mTextView.setTextColor(Color.BLACK);
                         uploadLinearLayout.setVisibility(View.GONE);
-//                        mSendButton.setVisibility(View.GONE);
-//                        wasteTypeGroup.setVisibility(View.GONE);
+                        openThanksActivity();
                     }
                 });
             }
@@ -405,6 +405,11 @@ public class AutoMLActivity extends BaseActivity {
             }
         });
 
+    }
+
+    public void openThanksActivity() {
+        Intent intent = new Intent(this, ThanksActivity.class);
+        startActivity(intent);
     }
 
 //    public void displayToast(String message) {
